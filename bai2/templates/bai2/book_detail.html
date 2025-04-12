@@ -1,0 +1,36 @@
+{% extends "bai2/base.html" %}
+
+{% block title %}{{ book.title }} - Book Store{% endblock %}
+
+{% block content %}
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            {% if book.cover_image %}
+            <img src="{{ book.cover_image.url }}" class="img-fluid rounded shadow" alt="{{ book.title }} cover">
+            {% else %}
+            <div class="text-center py-5 bg-light rounded">
+                <i class="fas fa-book fa-5x text-muted"></i>
+            </div>
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h2 class="mb-3">{{ book.title }}</h2>
+            <p class="text-muted h5 mb-4">by {{ book.author }}</p>
+            <div class="d-flex align-items-center mb-4">
+                <span class="badge bg-primary me-2">${{ book.price }}</span>
+                <a href="{% url 'bai2:book_list' %}" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-1"></i> Back to List
+                </a>
+            </div>
+            
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Description</h5>
+                </div>
+                <div class="card-body">
+                    <p class="card-text">{{ book.description }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

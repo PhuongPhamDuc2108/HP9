@@ -1,0 +1,16 @@
+{% extends "bai2/base.html" %}
+
+{% block content %}
+    <div class="book-list">
+        {% for book in books %}
+        <div class="book-card">
+            <div class="book-title">{{ book.title }}</div>
+            <div class="book-author">by {{ book.author }}</div>
+            <div class="book-price">${{ book.price }}</div>
+            <a href="{% url 'bai2:book_detail' book.pk %}">View Details</a>
+        </div>
+        {% empty %}
+        <p>No books available at the moment.</p>
+        {% endfor %}
+    </div>
+{% endblock %}
