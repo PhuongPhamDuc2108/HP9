@@ -1,0 +1,49 @@
+{% extends 'bai2/base.html' %}
+
+{% block title %}Giỏ hàng{% endblock %}
+
+{% block content %}
+<h2>Giỏ hàng của bạn</h2>
+{% if cart_items %}
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Sách</th>
+            <th>Ảnh</th>
+            <th>Số lượng</th>
+            <th>Giá</th>
+            <th>Tổng</th>
+            <th>Số trang</th>
+            <th>Trọng lượng</th>
+            <th>Ngày xuất bản</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in cart_items %}
+        <tr>
+            <td>{{ item.book.title }}</td>
+            <td>
+                {% if item.book.cover_image %}
+                <img src="{{ item.book.cover_image.url }}" alt="{{ item.book.title }}" style="height: 80px;">
+                {% else %}
+                <span>Không có ảnh</span>
+                {% endif %}
+            </td>
+            <td>{{ item.quantity }}</td>
+            <td>{{ item.book.price|floatformat:2 }} VND</td>
+            <td>{{ item.item_total|floatformat:2 }} VND</td>
+            <td>{{ item.book.pages }}</td>
+            <td>{{ item.book.weight }}g</td>
+            <td>{{ item.book.release_date|date:"d/m/Y" }}</td>
+        </tr>
+        {% endfor %}
+        <tr>
+            <td colspan="7" class="text-end"><strong>Tổng cộng:</strong></td>
+            <td><strong>{{ total_price|floatformat:2 }} VND</strong></td>
+        </tr>
+    </tbody>
+</table>
+{% else %}
+<p>Giỏ hàng của bạn đang trống.</p>
+{% endif %}
+{% endblock %}

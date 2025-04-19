@@ -1,16 +1,47 @@
 {% extends "bai2/base.html" %}
 
 {% block content %}
-    <div class="book-list">
+<div class="container">
+    <form method="get" class="mb-4">
+        <label for="category" class="form-label">Lọc theo thể loại:</label>
+        <select name="category" id="category" class="form-select" onchange="this.form.submit()">
+            <option value="">Tất cả thể loại</option>
+            {% for code, name in category_choices %}
+                <option value="{{ code }}" {% if selected_category == code %}selected{% endif %}>{{ name }}</option>
+            {% endfor %}
+        </select>
+    </form>
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         {% for book in books %}
-        <div class="book-card">
-            <div class="book-title">{{ book.title }}</div>
-            <div class="book-author">by {{ book.author }}</div>
-            <div class="book-price">${{ book.price }}</div>
-            <a href="{% url 'bai2:book_detail' book.pk %}">View Details</a>
+        <div class="col">
+            <div class="card h-100">
+                {% if book.cover_image %}
+                <img src="{{ book.cover_image.url }}" class="card-img-top" alt="{{ book.title }}" style="height: 300px; object-fit: contain;">
+                {% else %}
+                <div class="d-flex align-items-center justify-content-center bg-light" style="height: 300px;">
+                    <i class="fas fa-book fa-5x text-muted"></i>
+                </div>
+                {% endif %}
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text text-primary fw-bold fs-5">{{ book.price|floatformat:0 }}đ</p>
+                    <div class="mt-auto d-flex justify-content-between">
+                        <form method="post" action="{% url 'bai2:add_to_cart' book.id %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-danger btn-sm">
+                                <i class="fas fa-shopping-cart me-1"></i>Mua
+                            </button>
+                        </form>
+                        <a href="{% url 'bai2:book_detail' book.pk %}" class="btn btn-outline-primary btn-sm">
+                            Xem chi tiết
+                        </a>
+                    </div>
+                </div>
+            </div>
         </div>
         {% empty %}
-        <p>No books available at the moment.</p>
+        <p>Hiện tại chưa có sách nào.</p>
         {% endfor %}
     </div>
+</div>
 {% endblock %}

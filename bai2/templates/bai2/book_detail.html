@@ -1,36 +1,235 @@
 {% extends "bai2/base.html" %}
 
-{% block title %}{{ book.title }} - Book Store{% endblock %}
+{% block title %}{{ book.title }} - Minh Long Book{% endblock %}
 
 {% block content %}
+<div class="container">
     <div class="row">
-        <div class="col-md-4 mb-4">
-            {% if book.cover_image %}
-            <img src="{{ book.cover_image.url }}" class="img-fluid rounded shadow" alt="{{ book.title }} cover">
-            {% else %}
-            <div class="text-center py-5 bg-light rounded">
-                <i class="fas fa-book fa-5x text-muted"></i>
-            </div>
-            {% endif %}
+        <!-- Breadcrumb Navigation -->
+        <div class="col-12 mb-3">
+            <nav aria-label="breadcrumb">
+                <ol class="breadcrumb">
+                    <li class="breadcrumb-item"><a href="{% url 'bai2:book_list' %}">Trang chủ</a></li>
+                    <li class="breadcrumb-item"><a href="#">{{ book.category }}</a></li>
+                    <li class="breadcrumb-item active" aria-current="page">{{ book.title }}</li>
+                </ol>
+            </nav>
         </div>
-        <div class="col-md-8">
-            <h2 class="mb-3">{{ book.title }}</h2>
-            <p class="text-muted h5 mb-4">by {{ book.author }}</p>
-            <div class="d-flex align-items-center mb-4">
-                <span class="badge bg-primary me-2">${{ book.price }}</span>
-                <a href="{% url 'bai2:book_list' %}" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-1"></i> Back to List
-                </a>
-            </div>
-            
-            <div class="card mb-4">
-                <div class="card-header bg-light">
-                    <h5 class="mb-0">Description</h5>
+
+        <!-- Main Book Content -->
+        <div class="col-lg-5 mb-4">
+            <div class="card">
+                <div class="card-body text-center">
+                    {% if book.cover_image %}
+                    <img src="{{ book.cover_image.url }}" class="img-fluid rounded" alt="{{ book.title }}">
+                    {% else %}
+                    <div class="text-center py-5 bg-light rounded">
+                        <i class="fas fa-book fa-5x text-muted"></i>
+                    </div>
+                    {% endif %}
                 </div>
+            </div>
+        </div>
+
+        <div class="col-lg-7">
+            <div class="card">
                 <div class="card-body">
-                    <p class="card-text">{{ book.description }}</p>
+                    <h1 class="h3 mb-3">{{ book.title }}</h1>
+                    <p class="text-muted h5 mb-4">Tác giả: {{ book.author }}</p>
+                    
+                    <div class="d-flex align-items-center mb-4">
+                        <div class="me-4">
+                            <div class="d-flex align-items-center">
+                                <div class="me-2">
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star text-warning"></i>
+                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                </div>
+                                <span class="text-muted">(12 đánh giá)</span>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge bg-success">Còn hàng</span>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        {% if book.discount %}
+                        <div class="d-flex align-items-center">
+                            <span class="h3 text-danger me-3">{{ book.price|floatformat:0 }}đ</span>
+                            <span class="text-muted text-decoration-line-through me-2">{{ book.old_price|floatformat:0 }}đ</span>
+                            <span class="badge bg-danger">-{{ book.discount }}%</span>
+                        </div>
+                        {% else %}
+                        <span class="h3 text-danger">{{ book.price|floatformat:0 }}đ</span>
+                        {% endif %}
+                    </div>
+
+                    <div class="d-flex mb-4">
+                        <form method="post" action="{% url 'bai2:add_to_cart' book.id %}" class="d-flex w-100">
+                            {% csrf_token %}
+                            <div class="input-group me-3" style="width: 120px;">
+                                <button class="btn btn-outline-secondary" type="button" onclick="decreaseQuantity()">-</button>
+                                <input type="text" id="quantity" name="quantity" class="form-control text-center" value="1" aria-label="Quantity" readonly>
+                                <button class="btn btn-outline-secondary" type="button" onclick="increaseQuantity()">+</button>
+                            </div>
+                            <button type="submit" class="btn btn-danger flex-grow-1">
+                                <i class="fas fa-shopping-cart me-2"></i>Thêm vào giỏ hàng
+                            </button>
+                        </form>
+                    </div>
+
+                    <script>
+                        function increaseQuantity() {
+                            var qtyInput = document.getElementById('quantity');
+                            var current = parseInt(qtyInput.value);
+                            qtyInput.value = current + 1;
+                        }
+                        function decreaseQuantity() {
+                            var qtyInput = document.getElementById('quantity');
+                            var current = parseInt(qtyInput.value);
+                            if (current > 1) {
+                                qtyInput.value = current - 1;
+                            }
+                        }
+                    </script>
+
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <h5 class="mb-0">Thông tin sản phẩm</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <p><strong>Nhà xuất bản:</strong> {{ book.publisher }}</p>
+                                    <p><strong>Ngày phát hành:</strong> {{ book.release_date|date:"d/m/Y" }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <p><strong>Số trang:</strong> {{ book.pages }}</p>
+                                    <p><strong>Trọng lượng:</strong> {{ book.weight }}g</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card mb-4">
+                        <div class="card-header bg-light">
+                            <ul class="nav nav-tabs card-header-tabs">
+                                <li class="nav-item">
+                                    <a class="nav-link active" href="#description" data-bs-toggle="tab">Mô tả sản phẩm</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#details" data-bs-toggle="tab">Chi tiết</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="#reviews" data-bs-toggle="tab">Đánh giá</a>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body tab-content">
+                            <div class="tab-pane fade show active" id="description">
+                                <p>{{ book.description }}</p>
+                            </div>
+                            <div class="tab-pane fade" id="details">
+                                <p><strong>Kích thước:</strong> {{ book.dimensions }}</p>
+                                <p><strong>Ngôn ngữ:</strong> {{ book.language }}</p>
+                                <p><strong>Loại bìa:</strong> {{ book.cover_type }}</p>
+                                <p><strong>ISBN:</strong> {{ book.isbn }}</p>
+                            </div>
+                            <div class="tab-pane fade" id="reviews">
+                                <div class="mb-4">
+                                    <h5>Đánh giá từ khách hàng</h5>
+                                    <div class="d-flex align-items-center mb-2">
+                                        <div class="me-3">
+                                            <span class="h2 mb-0">4.5</span>
+                                            <span class="text-muted">/5</span>
+                                        </div>
+                                        <div>
+                                            <div class="d-flex align-items-center mb-1">
+                                                <div class="me-2">
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star text-warning"></i>
+                                                    <i class="fas fa-star-half-alt text-warning"></i>
+                                                </div>
+                                                <span class="text-muted">12 đánh giá</span>
+                                            </div>
+                                            <div class="progress" style="height: 5px;">
+                                                <div class="progress-bar bg-warning" style="width: 90%"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- Sample review -->
+                                <div class="border-bottom pb-3 mb-3">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <strong>Nguyễn Văn A</strong>
+                                        <small class="text-muted">20/10/2023</small>
+                                    </div>
+                                    <div class="mb-2">
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                        <i class="fas fa-star text-warning"></i>
+                                    </div>
+                                    <p>Sách rất hay, nội dung hấp dẫn, giao hàng nhanh.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Related Products -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <h4 class="mb-4">SẢN PHẨM TƯƠNG TỰ</h4>
+            <div class="row">
+                {% for related_book in related_books %}
+                <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                    <div class="product-card h-100">
+                        <div class="position-relative">
+                            <img src="{% if related_book.cover_image %}{{ related_book.cover_image.url }}{% else %}https://via.placeholder.com/200x250{% endif %}" 
+                                 class="img-fluid product-img w-100" 
+                                 alt="{{ related_book.title }}">
+                            {% if related_book.discount %}
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="discount-badge">-{{ related_book.discount }}%</span>
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="p-3">
+                            <h5 class="product-title">{{ related_book.title }}</h5>
+                            <p class="text-muted small mb-2">by {{ related_book.author }}</p>
+                            <div class="mb-2">
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star text-warning"></i>
+                                <i class="fas fa-star-half-alt text-warning"></i>
+                                <span class="small text-muted ms-1">(8)</span>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <span class="product-price">{{ related_book.price|floatformat:0 }}đ</span>
+                                    {% if related_book.old_price %}
+                                    <span class="old-price ms-2">{{ related_book.old_price|floatformat:0 }}đ</span>
+                                    {% endif %}
+                                </div>
+                                <a href="{% url 'bai2:book_detail' related_book.pk %}" class="btn btn-sm btn-outline-primary">Xem ngay</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}
