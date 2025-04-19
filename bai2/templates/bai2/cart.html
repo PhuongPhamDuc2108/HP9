@@ -1,4 +1,5 @@
 {% extends 'bai2/base.html' %}
+{% load humanize %}
 
 {% block title %}Giỏ hàng{% endblock %}
 
@@ -16,6 +17,7 @@
             <th>Số trang</th>
             <th>Trọng lượng</th>
             <th>Ngày xuất bản</th>
+            <th>Hành động</th>
         </tr>
     </thead>
     <tbody>
@@ -29,17 +31,30 @@
                 <span>Không có ảnh</span>
                 {% endif %}
             </td>
-            <td>{{ item.quantity }}</td>
-            <td>{{ item.book.price|floatformat:2 }} VND</td>
-            <td>{{ item.item_total|floatformat:2 }} VND</td>
+            <td>
+                <form method="post" action="{% url 'bai2:update_cart_item' item.book.id %}">
+                    {% csrf_token %}
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" style="width: 60px;">
+                    <button type="submit" class="btn btn-primary btn-sm">Cập nhật</button>
+                </form>
+            </td>
+            <td>{{ item.book.price|intcomma }} ₫</td>
+            <td>{{ item.item_total|intcomma }} ₫</td>
             <td>{{ item.book.pages }}</td>
             <td>{{ item.book.weight }}g</td>
             <td>{{ item.book.release_date|date:"d/m/Y" }}</td>
+            <td>
+                <form method="post" action="{% url 'bai2:remove_cart_item' item.book.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('Bạn có chắc muốn xóa sách này khỏi giỏ hàng?');">Xóa</button>
+                </form>
+            </td>
         </tr>
         {% endfor %}
         <tr>
             <td colspan="7" class="text-end"><strong>Tổng cộng:</strong></td>
-            <td><strong>{{ total_price|floatformat:2 }} VND</strong></td>
+            <td><strong>{{ total_price|intcomma }} ₫</strong></td>
+            <td></td>
         </tr>
     </tbody>
 </table>

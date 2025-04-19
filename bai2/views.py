@@ -27,6 +27,25 @@ def add_to_cart(request, book_id):
     request.session['cart'] = cart
     return redirect('bai2:view_cart')
 
+def update_cart_item(request, book_id):
+    if request.method == 'POST':
+        quantity = int(request.POST.get('quantity', 1))
+        cart = request.session.get('cart', {})
+        if quantity > 0:
+            cart[str(book_id)] = quantity
+        else:
+            if str(book_id) in cart:
+                del cart[str(book_id)]
+        request.session['cart'] = cart
+    return redirect('bai2:view_cart')
+
+def remove_cart_item(request, book_id):
+    cart = request.session.get('cart', {})
+    if str(book_id) in cart:
+        del cart[str(book_id)]
+    request.session['cart'] = cart
+    return redirect('bai2:view_cart')
+
 def view_cart(request):
     cart = request.session.get('cart', {})
     cart_items = []
