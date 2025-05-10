@@ -60,3 +60,24 @@ def view_cart(request):
             'item_total': item_total,
         })
     return render(request, 'bai2/cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
+from django.views.decorators.csrf import csrf_exempt
+from django.http import HttpResponse
+
+def checkout(request):
+    if request.method == 'POST':
+        payment_method = request.POST.get('payment_method')
+        shipping_name = request.POST.get('shipping_name')
+        shipping_address = request.POST.get('shipping_address')
+        shipping_phone = request.POST.get('shipping_phone')
+
+        request.session['cart'] = {}
+
+        return render(request, 'bai2/checkout_success.html', {
+            'payment_method': payment_method,
+            'shipping_name': shipping_name,
+            'shipping_address': shipping_address,
+            'shipping_phone': shipping_phone,
+        })
+    else:
+        return render(request, 'bai2/checkout.html')

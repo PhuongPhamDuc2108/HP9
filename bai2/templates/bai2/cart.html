@@ -61,4 +61,10 @@
 {% else %}
 <p>Giỏ hàng của bạn đang trống.</p>
 {% endif %}
+
+{% if cart_items %}
+<div style="margin-top: 20px;">
+    <a href="{% url 'bai2:checkout' %}" class="btn btn-success btn-lg">Thanh toán</a>
+</div>
+{% endif %}
 {% endblock %}

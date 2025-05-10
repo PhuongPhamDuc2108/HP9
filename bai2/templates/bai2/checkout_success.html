@@ -1,0 +1,18 @@
+{% extends 'bai2/base.html' %}
+
+{% block title %}Thanh toán thành công{% endblock %}
+
+{% block content %}
+<h2>Thanh toán thành công</h2>
+<p>Cảm ơn bạn đã đặt hàng!</p>
+
+<h4>Chi tiết đơn hàng:</h4>
+<ul>
+    <li>Phương thức thanh toán: {{ payment_method }}</li>
+    <li>Họ và tên người nhận: {{ shipping_name }}</li>
+    <li>Địa chỉ giao hàng: {{ shipping_address }}</li>
+    <li>Số điện thoại: {{ shipping_phone }}</li>
+</ul>
+
+<a href="{% url 'bai2:book_list' %}" class="btn btn-primary">Tiếp tục mua sắm</a>
+{% endblock %}
