@@ -18,12 +18,15 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from django.views.generic.base import RedirectView
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('introduction/', include('introduction.urls')),
     path('books/', include('bai2.urls')),
-    #path('introduction/', include('introduction.urls')),
+    # Commented out to avoid conflict with custom auth views
+    # path('accounts/', include('django.contrib.auth.urls')),
+    path('accounts/login/', RedirectView.as_view(url='/books/login/', permanent=False)),
     path('',include('introduction.urls')),
 ]
 
