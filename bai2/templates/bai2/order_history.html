@@ -1,0 +1,49 @@
+{% extends 'bai2/base.html' %}
+
+{% block title %}Lịch sử đặt hàng{% endblock %}
+
+{% block content %}
+<h2>Lịch sử đặt hàng của bạn</h2>
+
+{% if orders %}
+    <ul>
+    {% for order in orders %}
+        <li>
+            <h3>Đơn hàng #{{ order.id }} - Ngày: {{ order.order_date|date:"d/m/Y H:i" }} - Trạng thái: {{ order.status }}</h3>
+            <p>Phương thức thanh toán: {{ order.payment_method }}</p>
+            <p>Thông tin giao hàng:</p>
+            <ul>
+                <li>Người nhận: {{ order.shipping_name }}</li>
+                <li>Địa chỉ: {{ order.shipping_address }}</li>
+                <li>Điện thoại: {{ order.shipping_phone }}</li>
+            </ul>
+            <h4>Chi tiết đơn hàng:</h4>
+            <table border="1" cellpadding="5" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Sách</th>
+                        <th>Số lượng</th>
+                        <th>Giá</th>
+                        <th>Tổng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in order.items.all %}
+                    <tr>
+                        <td>{{ item.book.title }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.price }} đ</td>
+                        <td>{{ item.price }} đ</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <p><strong>Tổng tiền đơn hàng: {{ order.total_price }} đ</strong></p>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>Bạn chưa có đơn hàng nào.</p>
+{% endif %}
+
+{% endblock %}

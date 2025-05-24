@@ -1,0 +1,25 @@
+{% extends "bai2/base.html" %}
+
+{% block title %}Khuyến mãi{% endblock %}
+
+{% block content %}
+<div class="container my-4" style="background-color: white; padding: 30px 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+    <h2 class="mb-4" style="color: #d70018;">Khuyến mãi và Voucher</h2>
+    <div class="row">
+        {% for voucher in vouchers %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="card-title mb-0">{{ voucher.title }}</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Mã voucher:</strong> <code>{{ voucher.code }}</code></p>
+                    <p>{{ voucher.description }}</p>
+                    <p><small>Hạn sử dụng: {{ voucher.valid_until }}</small></p>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

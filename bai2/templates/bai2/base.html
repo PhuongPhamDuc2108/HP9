@@ -162,7 +162,8 @@
                 <div class="col-md-6 text-end">
                     {% if user.is_authenticated %}
                         <span class="text-white me-3">Xin chào, {{ user.username }}</span>
-                        <a href="{% url 'logout' %}" class="text-white me-3">Đăng xuất</a>
+                        <a href="{% url 'bai2:order_history' %}" class="text-white me-3">Lịch sử đặt hàng</a>
+                        <a href="{% url 'bai2:logout' %}" class="text-white me-3">Đăng xuất</a>
                     {% else %}
                         <a href="{% url 'bai2:login' %}" class="text-white me-3">Đăng nhập</a>
                         <a href="{% url 'bai2:register' %}" class="text-white me-3">Đăng ký</a>
@@ -208,7 +209,7 @@
             <a href="{% url 'bai2:book_list' %}"><i class="fas fa-home me-1"></i> Trang chủ</a>
             <a href="#"><i class="fas fa-book me-1"></i> Sách mới</a>
             <a href="#"><i class="fas fa-fire me-1"></i> Bán chạy</a>
-            <a href="#"><i class="fas fa-percentage me-1"></i> Khuyến mãi</a>
+            <a href="{% url 'bai2:promotions' %}"><i class="fas fa-percentage me-1"></i> Khuyến mãi</a>
             <a href="#"><i class="fas fa-gift me-1"></i> Quà tặng</a>
             <a href="#"><i class="fas fa-info-circle me-1"></i> Giới thiệu</a>
             <a href="#"><i class="fas fa-phone-alt me-1"></i> Liên hệ</a>
@@ -216,16 +217,16 @@
     </nav>
 
     <!-- Category Navigation -->
-    <nav class="category-nav">
-        <div class="container">
-            <a href="#"><i class="fas fa-book-open me-1"></i> Sách văn học</a>
-            <a href="#"><i class="fas fa-graduation-cap me-1"></i> Sách giáo khoa</a>
-            <a href="#"><i class="fas fa-brain me-1"></i> Sách kỹ năng</a>
-            <a href="#"><i class="fas fa-child me-1"></i> Sách thiếu nhi</a>
-            <a href="#"><i class="fas fa-laptop-code me-1"></i> Sách công nghệ</a>
-            <a href="#"><i class="fas fa-globe-asia me-1"></i> Sách ngoại ngữ</a>
-        </div>
-    </nav>
+        <nav class="category-nav">
+            <div class="container">
+                <a href="{% url 'bai2:book_list' %}?category=van_hoc"><i class="fas fa-book-open me-1"></i> Sách văn học</a>
+                <a href="{% url 'bai2:book_list' %}?category=giao_khoa"><i class="fas fa-graduation-cap me-1"></i> Sách giáo khoa</a>
+                <a href="{% url 'bai2:book_list' %}?category=ky_nang"><i class="fas fa-brain me-1"></i> Sách kỹ năng</a>
+                <a href="{% url 'bai2:book_list' %}?category=thieu_nhi"><i class="fas fa-child me-1"></i> Sách thiếu nhi</a>
+                <a href="{% url 'bai2:book_list' %}?category=cong_nghe"><i class="fas fa-laptop-code me-1"></i> Sách công nghệ</a>
+                <a href="{% url 'bai2:book_list' %}?category=ngoai_ngu"><i class="fas fa-globe-asia me-1"></i> Sách ngoại ngữ</a>
+            </div>
+        </nav>
 
     <!-- Promotional Banner -->
     <div class="promo-banner">
@@ -247,7 +248,7 @@
                 <div class="col-md-3">
                     <h5 class="footer-title">VỀ MINH LONG BOOK</h5>
                     <div class="footer-links">
-                        <a href="#">Giới thiệu</a>
+                        <a href="{% url 'introduction' %}">Giới thiệu</a>
                         <a href="#">Tuyển dụng</a>
                         <a href="#">Hệ thống cửa hàng</a>
                         <a href="#">Chính sách bảo mật</a>

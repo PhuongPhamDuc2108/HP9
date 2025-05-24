@@ -63,17 +63,87 @@ def view_cart(request):
             'quantity': quantity,
             'item_total': item_total,
         })
-    return render(request, 'bai2/cart.html', {'cart_items': cart_items, 'total_price': total_price})
+
+    discount = 0
+    applied_voucher = None
+
+    if request.method == 'POST':
+        voucher_code = request.POST.get('voucher_code', '').strip().upper()
+        vouchers = {
+            'SALE10': 0.10,
+            'BUY2GET1': 0,  # Special handling needed, skip for now
+            'FREESHIP': 0,  # Shipping not handled here, skip
+        }
+        if voucher_code in vouchers:
+            if voucher_code == 'SALE10' and total_price > 500000:
+                discount = total_price * vouchers[voucher_code]
+                applied_voucher = voucher_code
+            else:
+                # For simplicity, only implement SALE10 discount here
+                applied_voucher = None
+        else:
+            applied_voucher = None
+
+        request.session['applied_voucher'] = applied_voucher
+        request.session['discount'] = discount
+
+    else:
+        applied_voucher = request.session.get('applied_voucher')
+        discount = request.session.get('discount', 0)
+
+    final_price = total_price - discount
+
+    context = {
+        'cart_items': cart_items,
+        'total_price': total_price,
+        'discount': discount,
+        'final_price': final_price,
+        'applied_voucher': applied_voucher,
+    }
+    return render(request, 'bai2/cart.html', context)
 
 from django.views.decorators.csrf import csrf_exempt
 from django.http import HttpResponse
 
+from .models import Order, OrderItem
+from django.contrib.auth.decorators import login_required
+
+@login_required
 def checkout(request):
     if request.method == 'POST':
         payment_method = request.POST.get('payment_method')
         shipping_name = request.POST.get('shipping_name')
         shipping_address = request.POST.get('shipping_address')
         shipping_phone = request.POST.get('shipping_phone')
+
+        cart = request.session.get('cart', {})
+        if not cart:
+            messages.error(request, "Giỏ hàng trống.")
+            return redirect('bai2:book_list')
+
+        total_price = 0
+        for book_id, quantity in cart.items():
+            book = get_object_or_404(Book, pk=book_id)
+            total_price += book.price * quantity
+
+        order = Order.objects.create(
+            user=request.user,
+            total_price=total_price,
+            payment_method=payment_method,
+            shipping_name=shipping_name,
+            shipping_address=shipping_address,
+            shipping_phone=shipping_phone,
+            status='Pending',
+        )
+
+        for book_id, quantity in cart.items():
+            book = get_object_or_404(Book, pk=book_id)
+            OrderItem.objects.create(
+                order=order,
+                book=book,
+                quantity=quantity,
+                price=book.price,
+            )
 
         request.session['cart'] = {}
 
@@ -82,6 +152,7 @@ def checkout(request):
             'shipping_name': shipping_name,
             'shipping_address': shipping_address,
             'shipping_phone': shipping_phone,
+            'order': order,
         })
     else:
         return render(request, 'bai2/checkout.html')
@@ -118,3 +189,33 @@ def user_logout(request):
     logout(request)
     messages.info(request, "Logged out successfully.")
     return redirect('bai2:book_list')
+
+from django.contrib.auth.decorators import login_required
+
+@login_required
+def order_history(request):
+    orders = request.user.orders.all().order_by('-order_date')
+    return render(request, 'bai2/order_history.html', {'orders': orders})
+
+def promotions_view(request):
+    vouchers = [
+        {
+            'title': 'Giảm 10% cho đơn hàng trên 500K',
+            'code': 'SALE10',
+            'description': 'Áp dụng cho tất cả các sản phẩm trong giỏ hàng.',
+            'valid_until': '31/12/2024',
+        },
+        {
+            'title': 'Mua 2 tặng 1',
+            'code': 'BUY2GET1',
+            'description': 'Áp dụng cho sách văn học và kỹ năng.',
+            'valid_until': '30/11/2024',
+        },
+        {
+            'title': 'Miễn phí vận chuyển cho đơn hàng trên 300K',
+            'code': 'FREESHIP',
+            'description': 'Áp dụng cho tất cả các đơn hàng.',
+            'valid_until': '31/12/2024',
+        },
+    ]
+    return render(request, 'bai2/promotions.html', {'vouchers': vouchers})

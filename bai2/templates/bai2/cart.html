@@ -63,6 +63,21 @@
 {% endif %}
 
 {% if cart_items %}
+<form method="post" action="{% url 'bai2:view_cart' %}">
+    {% csrf_token %}
+    <div class="mb-3">
+        <label for="voucher_code" class="form-label">Mã voucher</label>
+        <input type="text" id="voucher_code" name="voucher_code" class="form-control" placeholder="Nhập mã voucher" value="{{ applied_voucher|default:'' }}">
+    </div>
+    <button type="submit" class="btn btn-primary mb-3">Áp dụng voucher</button>
+</form>
+
+{% if discount and discount > 0 %}
+<div class="alert alert-success">
+    Voucher <strong>{{ applied_voucher }}</strong> đã được áp dụng. Bạn tiết kiệm được <strong>{{ discount|intcomma }} ₫</strong>.
+</div>
+{% endif %}
+
 <div style="margin-top: 20px;">
     <a href="{% url 'bai2:checkout' %}" class="btn btn-success btn-lg">Thanh toán</a>
 </div>
