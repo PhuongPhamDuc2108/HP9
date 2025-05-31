@@ -16,4 +16,5 @@ urlpatterns = [
     path('logout/', views.user_logout, name='logout'),
     path('promotions/', views.promotions_view, name='promotions'),
     path('order-history/', views.order_history, name='order_history'),
+    path('apply-coupon/<int:coupon_id>/', views.apply_coupon, name='apply_coupon'),
 ]

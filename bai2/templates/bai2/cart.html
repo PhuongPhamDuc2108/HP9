@@ -67,14 +67,30 @@
     {% csrf_token %}
     <div class="mb-3">
         <label for="voucher_code" class="form-label">Mã voucher</label>
-        <input type="text" id="voucher_code" name="voucher_code" class="form-control" placeholder="Nhập mã voucher" value="{{ applied_voucher|default:'' }}">
+        <input type="text" id="voucher_code" name="voucher_code" class="form-control" placeholder="Nhập mã voucher" value="{{ applied_coupon.code|default:'' }}">
     </div>
     <button type="submit" class="btn btn-primary mb-3">Áp dụng voucher</button>
 </form>
 
 {% if discount and discount > 0 %}
 <div class="alert alert-success">
-    Voucher <strong>{{ applied_voucher }}</strong> đã được áp dụng. Bạn tiết kiệm được <strong>{{ discount|intcomma }} ₫</strong>.
+    Voucher <strong>{{ applied_coupon.code }}</strong> đã được áp dụng. Bạn tiết kiệm được <strong>{{ discount|intcomma }} ₫</strong>.
+</div>
+{% endif %}
+
+<div class="d-flex justify-content-between mb-3 mt-3">
+    <span class="h5">Tổng cộng:</span>
+    <span class="h5">{{ total_price|intcomma }} ₫</span>
+</div>
+
+{% if discount and discount > 0 %}
+<div class="d-flex justify-content-between mb-3 text-success">
+    <span class="h5">Giảm giá:</span>
+    <span class="h5">-{{ discount|intcomma }} ₫</span>
+</div>
+<div class="d-flex justify-content-between mb-3">
+    <span class="h4">Thành tiền:</span>
+    <span class="h4 text-danger">{{ final_price|intcomma }} ₫</span>
 </div>
 {% endif %}
 

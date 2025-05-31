@@ -1,44 +1,99 @@
 {% extends 'bai2/base.html' %}
+{% load humanize %}
 
 {% block title %}Thanh toán{% endblock %}
 
 {% block content %}
-<h2>Thanh toán</h2>
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <h2>Thanh toán</h2>
 
-<form method="post" action="{% url 'bai2:checkout' %}" style="max-width: 500px; margin: auto;">
-    {% csrf_token %}
-    <h4>Phương thức thanh toán</h4>
-    <div style="display: flex; gap: 20px; margin-bottom: 20px;">
-        <label style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer;">
-            <input type="radio" id="cash" name="payment_method" value="Tiền mặt" required style="margin-right: 8px;">
-            Tiền mặt
-        </label>
-        <label style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer;">
-            <input type="radio" id="bank_transfer" name="payment_method" value="Chuyển khoản" required style="margin-right: 8px;">
-            Chuyển khoản
-        </label>
-        <label style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer;">
-            <input type="radio" id="visa" name="payment_method" value="Thẻ Visa" required style="margin-right: 8px;">
-            Thẻ Visa
-        </label>
+            <form method="post" action="{% url 'bai2:checkout' %}">
+                {% csrf_token %}
+                <h4>Phương thức thanh toán</h4>
+                <div style="display: flex; gap: 20px; margin-bottom: 20px;">
+                    <label style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer;">
+                        <input type="radio" id="cash" name="payment_method" value="Tiền mặt" required style="margin-right: 8px;">
+                        Tiền mặt
+                    </label>
+                    <label style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer;">
+                        <input type="radio" id="bank_transfer" name="payment_method" value="Chuyển khoản" required style="margin-right: 8px;">
+                        Chuyển khoản
+                    </label>
+                    <label style="flex: 1; border: 1px solid #ccc; padding: 10px; border-radius: 5px; text-align: center; cursor: pointer;">
+                        <input type="radio" id="visa" name="payment_method" value="Thẻ Visa" required style="margin-right: 8px;">
+                        Thẻ Visa
+                    </label>
+                </div>
+
+                <h4>Thông tin giao hàng</h4>
+                <div style="display: flex; flex-direction: column; gap: 15px;">
+                    <div>
+                        <label for="shipping_name">Họ và tên:</label><br>
+                        <input type="text" id="shipping_name" name="shipping_name" required style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+                    </div>
+                    <div>
+                        <label for="shipping_address">Địa chỉ:</label><br>
+                        <textarea id="shipping_address" name="shipping_address" rows="3" required style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;"></textarea>
+                    </div>
+                    <div>
+                        <label for="shipping_phone">Số điện thoại:</label><br>
+                        <input type="text" id="shipping_phone" name="shipping_phone" required style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Thanh toán</button>
+            </form>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Tóm tắt đơn hàng</h4>
+                </div>
+                <div class="card-body">
+                    {% if cart_items %}
+                        <div class="mb-3">
+                            <h5>Sản phẩm</h5>
+                            <ul class="list-group">
+                                {% for item in cart_items %}
+                                <li class="list-group-item d-flex justify-content-between align-items-center">
+                                    {{ item.book.title }} (x{{ item.quantity }})
+                                    <span>{{ item.item_total|intcomma }} ₫</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Tổng tiền:</span>
+                            <strong>{{ total_price|intcomma }} ₫</strong>
+                        </div>
+
+                        {% if discount > 0 %}
+                        <div class="d-flex justify-content-between mb-2 text-success">
+                            <span>Giảm giá:</span>
+                            <strong>-{{ discount|intcomma }} ₫</strong>
+                        </div>
+                        {% endif %}
+
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Thành tiền:</span>
+                            <strong class="text-danger">{{ final_price|intcomma }} ₫</strong>
+                        </div>
+
+                        {% if coupon %}
+                        <div class="alert alert-success mt-3">
+                            <small>Mã giảm giá <strong>{{ coupon.code }}</strong> đã được áp dụng.</small>
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <p>Giỏ hàng trống</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
-
-    <h4>Thông tin giao hàng</h4>
-    <div style="display: flex; flex-direction: column; gap: 15px;">
-        <div>
-            <label for="shipping_name">Họ và tên:</label><br>
-            <input type="text" id="shipping_name" name="shipping_name" required style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
-        <div>
-            <label for="shipping_address">Địa chỉ:</label><br>
-            <textarea id="shipping_address" name="shipping_address" rows="3" required style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;"></textarea>
-        </div>
-        <div>
-            <label for="shipping_phone">Số điện thoại:</label><br>
-            <input type="text" id="shipping_phone" name="shipping_phone" required style="width: 100%; padding: 8px; box-sizing: border-box; border-radius: 4px; border: 1px solid #ccc;">
-        </div>
-    </div>
-
-    <button type="submit" class="btn btn-primary" style="margin-top: 20px; width: 100%;">Thanh toán</button>
-</form>
+</div>
 {% endblock %}
