@@ -10,13 +10,42 @@ from decimal import Decimal
 def book_list(request):
     category = request.GET.get('category')
     books = Book.objects.filter(available=True)
+
     if category:
         books = books.filter(category=category)
-    context = {
-        'books': books,
-        'category_choices': Book.CATEGORY_CHOICES,
-        'selected_category': category,
-    }
+        # When a category is selected, we still use the old format
+        context = {
+            'books': books,
+            'category_choices': Book.CATEGORY_CHOICES,
+            'selected_category': category,
+            'is_filtered': True,
+        }
+    else:
+        # When no category is selected, group books by category
+        books_by_category = {}
+        category_dict = dict(Book.CATEGORY_CHOICES)
+
+        # Initialize with empty lists for all categories to ensure order
+        for cat_code, cat_name in Book.CATEGORY_CHOICES:
+            books_by_category[cat_code] = {
+                'name': cat_name,
+                'books': []
+            }
+
+        # Populate with actual books
+        for book in books:
+            books_by_category[book.category]['books'].append(book)
+
+        # Remove empty categories
+        books_by_category = {k: v for k, v in books_by_category.items() if v['books']}
+
+        context = {
+            'books_by_category': books_by_category,
+            'category_choices': Book.CATEGORY_CHOICES,
+            'selected_category': category,
+            'is_filtered': False,
+        }
+
     return render(request, 'bai2/book_list.html', context)
 
 def book_detail(request, pk):
