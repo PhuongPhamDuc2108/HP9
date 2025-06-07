@@ -380,3 +380,9 @@ def apply_coupon(request, coupon_id):
         messages.error(request, "Mã giảm giá không hợp lệ hoặc đã hết hạn.")
 
     return redirect('bai2:view_cart')
+
+def stores_view(request):
+    """
+    View function for displaying the stores page with Google Maps.
+    """
+    return render(request, 'bai2/stores.html')

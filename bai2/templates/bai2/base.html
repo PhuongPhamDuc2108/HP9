@@ -195,8 +195,10 @@
                         <span>Hỗ trợ 24/7</span>
                     </div>
                     <div class="d-inline-block">
-                        <i class="fas fa-map-marker-alt me-1"></i>
-                        <span>Cửa hàng</span>
+                        <a href="{% url 'bai2:stores' %}" class="text-dark text-decoration-none">
+                            <i class="fas fa-map-marker-alt me-1"></i>
+                            <span>Cửa hàng</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -250,7 +252,7 @@
                     <div class="footer-links">
                         <a href="{% url 'introduction' %}">Giới thiệu</a>
                         <a href="#">Tuyển dụng</a>
-                        <a href="#">Hệ thống cửa hàng</a>
+                        <a href="{% url 'bai2:stores' %}">Hệ thống cửa hàng</a>
                         <a href="#">Chính sách bảo mật</a>
                     </div>
                 </div>
